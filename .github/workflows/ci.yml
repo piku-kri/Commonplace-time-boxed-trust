@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@1.75.0
         with:
           targets: wasm32-unknown-unknown
       - name: Install cargo-binstall
@@ -20,7 +20,9 @@ jobs:
       - name: Install Stellar CLI
         run: cargo binstall --no-confirm stellar-cli
       - name: Build Contracts
-        run: cargo build --target wasm32-unknown-unknown --release
+        run: |
+          cargo build -p steward-reputation --target wasm32-unknown-unknown --release
+          cargo build -p library-registry --target wasm32-unknown-unknown --release
       - name: Run Contract Tests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

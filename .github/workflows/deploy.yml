@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@1.75.0
         with:
           targets: wasm32-unknown-unknown
 
@@ -39,7 +39,8 @@ jobs:
       # 3. Build using standard cargo to avoid 'wasm32v1-none' errors, then manually optimize
       - name: Build contracts
         run: |
-          cargo build --target wasm32-unknown-unknown --release
+          cargo build -p steward-reputation --target wasm32-unknown-unknown --release
+          cargo build -p library-registry --target wasm32-unknown-unknown --release
           stellar contract optimize --wasm target/wasm32-unknown-unknown/release/library_registry.wasm
           stellar contract optimize --wasm target/wasm32-unknown-unknown/release/steward_reputation.wasm
 
