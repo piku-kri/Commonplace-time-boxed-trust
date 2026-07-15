@@ -172,8 +172,21 @@ async function readContract(
   if (SorobanRpc.Api.isSimulationError(simulated)) {
     throw new ContractCallError(`Could not read ${method} from the contract.`, simulated.error);
   }
-  if (!simulated.result) return null;
-  return scValToNative(simulated.result.retval);
+  const sim: any = simulated;
+  
+  if (sim.result && sim.result.retval) {
+    return scValToNative(sim.result.retval);
+  } else if (sim.results && sim.results.length > 0) {
+    // stellar-sdk > v12
+    const scVal = xdr.ScVal.fromXDR(sim.results[0].xdr, "base64");
+    return scValToNative(scVal);
+  } else if (sim.result && sim.result.xdr) {
+    // some intermediate sdk versions
+    const scVal = xdr.ScVal.fromXDR(sim.result.xdr, "base64");
+    return scValToNative(scVal);
+  }
+
+  return null;
 }
 
 // ---------- LibraryRegistry read/write helpers ----------
