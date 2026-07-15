@@ -83,8 +83,9 @@ async function invokeContract(
   }
 
   if (sendResponse.status === "ERROR") {
+    console.error("sendTransaction ERROR:", sendResponse);
     throw new ContractCallError(
-      "The network rejected this transaction before it could run.",
+      `The network rejected this transaction before it could run. (Error: ${sendResponse.errorResultXdr || JSON.stringify(sendResponse)})`,
       sendResponse
     );
   }
