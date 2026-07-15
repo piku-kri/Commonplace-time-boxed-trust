@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { openWalletSelector, disconnectWallet } from "@/lib/wallet";
 
 export interface WalletState {
@@ -16,16 +16,27 @@ export function useWallet() {
     error: null,
   });
 
+  useEffect(() => {
+    const saved = localStorage.getItem("commonplace-wallet");
+    if (saved) {
+      setState((s) => ({ ...s, address: saved }));
+    }
+  }, []);
+
   const connect = useCallback(() => {
     setState((s) => ({ ...s, isConnecting: true, error: null }));
     openWalletSelector(
-      (address) => setState({ address, isConnecting: false, error: null }),
+      (address) => {
+        localStorage.setItem("commonplace-wallet", address);
+        setState({ address, isConnecting: false, error: null });
+      },
       (message) => setState((s) => ({ ...s, isConnecting: false, error: message }))
     );
   }, []);
 
   const disconnect = useCallback(async () => {
     await disconnectWallet();
+    localStorage.removeItem("commonplace-wallet");
     setState({ address: null, isConnecting: false, error: null });
   }, []);
 
