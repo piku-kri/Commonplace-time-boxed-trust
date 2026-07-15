@@ -10,7 +10,7 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contracterror, contractevent, contractimpl, contracttype, Address, Env, String,
+    contract, contracterror, contractimpl, contracttype, symbol_short, Address, Env, String, Symbol,
 };
 
 #[contracttype]
@@ -38,24 +38,21 @@ pub enum ReputationError {
     InvalidAmount = 4,
 }
 
-#[contractevent(topics = ["reputation", "cycle_completed"])]
+#[contracttype]
 pub struct CycleCompletedEvent {
-    #[topic]
     pub steward: Address,
     pub new_score: u32,
     pub deposit_returned: i128,
 }
 
-#[contractevent(topics = ["reputation", "cycle_lapsed"])]
+#[contracttype]
 pub struct CycleLapsedEvent {
-    #[topic]
     pub steward: Address,
     pub new_score: u32,
 }
 
-#[contractevent(topics = ["registry", "writer_authorized"])]
+#[contracttype]
 pub struct WriterAuthorizedEvent {
-    #[topic]
     pub writer: Address,
 }
 
@@ -90,7 +87,10 @@ impl StewardReputation {
             .instance()
             .set(&DataKey::AuthorizedWriter(writer.clone()), &true);
 
-        WriterAuthorizedEvent { writer }.publish(&env);
+        env.events().publish(
+            (symbol_short!("registry"), Symbol::new(&env, "writer_authorized")),
+            WriterAuthorizedEvent { writer }
+        );
         Ok(())
     }
 
@@ -119,12 +119,14 @@ impl StewardReputation {
             .persistent()
             .set(&DataKey::Stats(steward.clone()), &stats);
 
-        CycleCompletedEvent {
-            steward,
-            new_score: stats.trust_score,
-            deposit_returned,
-        }
-        .publish(&env);
+        env.events().publish(
+            (Symbol::new(&env, "reputation"), Symbol::new(&env, "cycle_completed")),
+            CycleCompletedEvent {
+                steward,
+                new_score: stats.trust_score,
+                deposit_returned,
+            }
+        );
 
         Ok(stats)
     }
@@ -147,11 +149,13 @@ impl StewardReputation {
             .persistent()
             .set(&DataKey::Stats(steward.clone()), &stats);
 
-        CycleLapsedEvent {
-            steward,
-            new_score: stats.trust_score,
-        }
-        .publish(&env);
+        env.events().publish(
+            (Symbol::new(&env, "reputation"), Symbol::new(&env, "cycle_lapsed")),
+            CycleLapsedEvent {
+                steward,
+                new_score: stats.trust_score,
+            }
+        );
 
         Ok(stats)
     }

@@ -18,13 +18,13 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contracterror, contractevent, contractimpl, contracttype, token, Address, Env,
-    String, Vec,
+    contract, contracterror, contractimpl, contracttype, symbol_short, token, Address, Env,
+    String, Symbol, Vec,
 };
 
 mod reputation {
     soroban_sdk::contractimport!(
-        file = "../steward-reputation/target/wasm32-unknown-unknown/release/steward_reputation.wasm"
+        file = "../../target/wasm32-unknown-unknown/release/steward_reputation.wasm"
     );
 }
 
@@ -90,40 +90,35 @@ pub enum RegistryError {
 
 const MIN_GRACE_PERIOD_SECS: u64 = 3600; // 1 hour minimum, prevents griefing with 0-second loans
 
-#[contractevent(topics = ["library", "box_registered"])]
+#[contracttype]
 pub struct BoxRegisteredEvent {
-    #[topic]
     pub box_id: u32,
     pub steward: Address,
 }
 
-#[contractevent(topics = ["library", "book_listed"])]
+#[contracttype]
 pub struct BookListedEvent {
-    #[topic]
     pub listing_id: u32,
     pub box_id: u32,
     pub lister: Address,
     pub title: String,
 }
 
-#[contractevent(topics = ["library", "book_borrowed"])]
+#[contracttype]
 pub struct BookBorrowedEvent {
-    #[topic]
     pub listing_id: u32,
     pub borrower: Address,
 }
 
-#[contractevent(topics = ["library", "book_returned"])]
+#[contracttype]
 pub struct BookReturnedEvent {
-    #[topic]
     pub listing_id: u32,
     pub borrower: Address,
     pub deposit_refunded: i128,
 }
 
-#[contractevent(topics = ["library", "loan_lapsed"])]
+#[contracttype]
 pub struct LoanLapsedEvent {
-    #[topic]
     pub listing_id: u32,
     pub borrower: Address,
 }
@@ -176,7 +171,10 @@ impl LibraryRegistry {
         env.storage().persistent().set(&DataKey::Box(id), &book_box);
         env.storage().instance().set(&DataKey::BoxCount, &(id + 1));
 
-        BoxRegisteredEvent { box_id: id, steward }.publish(&env);
+        env.events().publish(
+            (symbol_short!("library"), Symbol::new(&env, "box_registered")),
+            BoxRegisteredEvent { box_id: id, steward }
+        );
         Ok(id)
     }
 
@@ -225,13 +223,15 @@ impl LibraryRegistry {
             .instance()
             .set(&DataKey::ListingCount, &(id + 1));
 
-        BookListedEvent {
-            listing_id: id,
-            box_id,
-            lister,
-            title,
-        }
-        .publish(&env);
+        env.events().publish(
+            (symbol_short!("library"), Symbol::new(&env, "book_listed")),
+            BookListedEvent {
+                listing_id: id,
+                box_id,
+                lister,
+                title,
+            }
+        );
 
         Ok(id)
     }
@@ -261,7 +261,10 @@ impl LibraryRegistry {
             .persistent()
             .set(&DataKey::Listing(listing_id), &listing);
 
-        BookBorrowedEvent { listing_id, borrower }.publish(&env);
+        env.events().publish(
+            (symbol_short!("library"), Symbol::new(&env, "book_borrowed")),
+            BookBorrowedEvent { listing_id, borrower }
+        );
         Ok(())
     }
 
@@ -307,12 +310,14 @@ impl LibraryRegistry {
             .persistent()
             .set(&DataKey::Listing(listing_id), &listing);
 
-        BookReturnedEvent {
-            listing_id,
-            borrower,
-            deposit_refunded: listing.deposit,
-        }
-        .publish(&env);
+        env.events().publish(
+            (symbol_short!("library"), Symbol::new(&env, "book_returned")),
+            BookReturnedEvent {
+                listing_id,
+                borrower,
+                deposit_refunded: listing.deposit,
+            }
+        );
 
         Ok(())
     }
@@ -356,7 +361,10 @@ impl LibraryRegistry {
             .persistent()
             .set(&DataKey::Listing(listing_id), &listing);
 
-        LoanLapsedEvent { listing_id, borrower }.publish(&env);
+        env.events().publish(
+            (symbol_short!("library"), Symbol::new(&env, "loan_lapsed")),
+            LoanLapsedEvent { listing_id, borrower }
+        );
         Ok(())
     }
 
