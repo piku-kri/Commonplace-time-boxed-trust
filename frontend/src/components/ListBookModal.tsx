@@ -32,13 +32,13 @@ export function ListBookModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!isOpen) return null;
-
   useEffect(() => {
     if (isOpen && !boxId && boxes.length > 0) {
       setBoxId(boxes[0].id.toString());
     }
   }, [isOpen, boxes, boxId]);
+
+  if (!isOpen) return null;
 
   const validate = (): string | null => {
     if (boxes.length === 0) return "Register a book box first before listing a book.";
