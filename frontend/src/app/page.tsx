@@ -83,7 +83,7 @@ export default function HomePage() {
     title: string,
     conditionNote: string,
     depositXlm: string,
-    gracePeriodHours: string
+    gracePeriodSecs: number
   ) => {
     if (!wallet.address) {
       addToast({ type: "error", message: "Connect your wallet first to list a book." });
@@ -91,7 +91,6 @@ export default function HomePage() {
     }
     try {
       const depositStroops = xlmToStroops(depositXlm);
-      const gracePeriodSecs = Math.round(Number(gracePeriodHours) * 3600);
       const txHash = await listBook(
         wallet.address,
         boxId,

@@ -12,7 +12,7 @@ interface ListBookModalProps {
     title: string,
     conditionNote: string,
     depositXlm: string,
-    gracePeriodHours: string
+    gracePeriodSecs: number
   ) => Promise<void>;
   onRegisterBoxClick: () => void;
 }
@@ -28,7 +28,8 @@ export function ListBookModal({
   const [title, setTitle] = useState("");
   const [conditionNote, setConditionNote] = useState("");
   const [deposit, setDeposit] = useState("");
-  const [graceHours, setGraceHours] = useState("48");
+  const [graceValue, setGraceValue] = useState("48");
+  const [graceUnit, setGraceUnit] = useState("hours");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,9 +49,9 @@ export function ListBookModal({
     const depositNum = Number(deposit);
     if (!deposit || Number.isNaN(depositNum) || depositNum <= 0)
       return "Deposit must be a positive number of XLM.";
-    const hoursNum = Number(graceHours);
-    if (!graceHours || Number.isNaN(hoursNum) || hoursNum < 1)
-      return "Grace period must be at least 1 hour.";
+    const graceNum = Number(graceValue);
+    if (!graceValue || Number.isNaN(graceNum) || graceNum <= 0)
+      return "Grace period must be greater than 0.";
     return null;
   };
 
@@ -69,7 +70,13 @@ export function ListBookModal({
         title.trim(),
         conditionNote.trim(),
         deposit.trim(),
-        graceHours.trim()
+        (() => {
+          const v = Number(graceValue);
+          if (graceUnit === "seconds") return Math.round(v);
+          if (graceUnit === "minutes") return Math.round(v * 60);
+          if (graceUnit === "hours") return Math.round(v * 3600);
+          return Math.round(v * 86400);
+        })()
       );
       setTitle("");
       setConditionNote("");
@@ -162,14 +169,26 @@ export function ListBookModal({
                   className="input font-mono"
                 />
               </Field>
-              <Field label="Grace period (hrs)">
-                <input
-                  value={graceHours}
-                  onChange={(e) => setGraceHours(e.target.value)}
-                  placeholder="48"
-                  inputMode="numeric"
-                  className="input font-mono"
-                />
+              <Field label="Grace period">
+                <div className="flex gap-2">
+                  <input
+                    value={graceValue}
+                    onChange={(e) => setGraceValue(e.target.value)}
+                    placeholder="48"
+                    inputMode="numeric"
+                    className="input font-mono w-20"
+                  />
+                  <select
+                    value={graceUnit}
+                    onChange={(e) => setGraceUnit(e.target.value)}
+                    className="input flex-1"
+                  >
+                    <option value="seconds">Seconds</option>
+                    <option value="minutes">Minutes</option>
+                    <option value="hours">Hours</option>
+                    <option value="days">Days</option>
+                  </select>
+                </div>
               </Field>
             </div>
 
