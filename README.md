@@ -6,14 +6,12 @@ A staked, on-chain "little free library" built on Stellar / Soroban. Borrow a bo
 
 ## 🔗 Live Demo & Video
 
-| | |
-|---|---|
-| 🌐 **Live Platform** | [commonplace-time-boxed-trust.vercel.app](https://commonplace-time-boxed-trust.vercel.app/) |
-| 🎥 **Demo Video** | [Watch on Google Drive](https://drive.google.com/file/d/1ZdOwDJw5N3g2PrX8eYCJJnfFKFwpQgW9/view?usp=sharing) |
-| 📜 **LibraryRegistry Contract** | [`CBXHNXC4PSFX4PAQSPKUJXQRGBSTMZ4AROG7WGSLP7XIGD3N7LLZK62O`](https://stellar.expert/explorer/testnet/contract/CBXHNXC4PSFX4PAQSPKUJXQRGBSTMZ4AROG7WGSLP7XIGD3N7LLZK62O) |
-| 📜 **StewardReputation Contract** | [`CBIZIE4XOHMR3PA2OM7JLXMKP3RA7ZDLN5JN5RXM4AA3TBORGAT657GA`](https://stellar.expert/explorer/testnet/contract/CBIZIE4XOHMR3PA2OM7JLXMKP3RA7ZDLN5JN5RXM4AA3TBORGAT657GA) |
-| 🧾 **Sample Borrow Tx** | [c0c4d17f...](https://stellar.expert/explorer/testnet/tx/c0c4d17fa2b0ccba1dc1181742f94a8d719a78fdfcdedb994c499c6c04142d9b) |
-| 🧾 **Sample Return Tx** | [6b56e5ce...](https://stellar.expert/explorer/testnet/tx/6b56e5ce144a6b88beda89e6eab421a92681006bd7642f4107f990015443c98a) |
+- **Live Platform**: [commonplace-time-boxed-trust.vercel.app](https://commonplace-time-boxed-trust.vercel.app/)
+- **Demo Video**: [Watch on Google Drive](https://drive.google.com/file/d/1ZdOwDJw5N3g2PrX8eYCJJnfFKFwpQgW9/view?usp=sharing)
+- **LibraryRegistry Contract**: [`CBXHNXC4PSFX4PAQSPKUJXQRGBSTMZ4AROG7WGSLP7XIGD3N7LLZK62O`](https://stellar.expert/explorer/testnet/contract/CBXHNXC4PSFX4PAQSPKUJXQRGBSTMZ4AROG7WGSLP7XIGD3N7LLZK62O)
+- **StewardReputation Contract**: [`CBIZIE4XOHMR3PA2OM7JLXMKP3RA7ZDLN5JN5RXM4AA3TBORGAT657GA`](https://stellar.expert/explorer/testnet/contract/CBIZIE4XOHMR3PA2OM7JLXMKP3RA7ZDLN5JN5RXM4AA3TBORGAT657GA)
+- **Sample Borrow Tx**: [`c0c4d17fa2b0ccba1dc1181742f94a8d719a78fdfcdedb994c499c6c04142d9b`](https://stellar.expert/explorer/testnet/tx/c0c4d17fa2b0ccba1dc1181742f94a8d719a78fdfcdedb994c499c6c04142d9b)
+- **Sample Return Tx**: [`6b56e5ce144a6b88beda89e6eab421a92681006bd7642f4107f990015443c98a`](https://stellar.expert/explorer/testnet/tx/6b56e5ce144a6b88beda89e6eab421a92681006bd7642f4107f990015443c98a)
 
 ---
 
@@ -28,19 +26,40 @@ A staked, on-chain "little free library" built on Stellar / Soroban. Borrow a bo
 
 ---
 
-## 📸 Screenshots
+## 📸 Platform Gallery & Submission Requirements
 
-### Product UI
-<img src="screenshots/product ui.png" width="100%" alt="Commonplace Product UI" />
+As per the submission checklist, here are the required screenshots demonstrating the platform's capabilities:
 
-### Mobile Responsive UI
-<img src="screenshots/responsive ui.png" width="100%" alt="Mobile Responsive UI" />
+### 1. Product UI
+<img src="screenshots/product_ui.png" width="100%" alt="Commonplace Product UI" />
 
-### CI/CD Pipeline
-<img src="screenshots/ci cd workflow.png" width="100%" alt="CI/CD Pipeline" />
+### 2. Mobile Responsive UI
+The platform is fully responsive and optimized for mobile devices.
+<img src="screenshots/responsive_ui.png" width="100%" alt="Mobile Responsive UI" />
 
-### Test Output (16 Passing Tests)
-<img src="screenshots/test output.png" width="100%" alt="Test Output" />
+### 3. CI/CD Pipeline Running
+Automated GitHub Actions workflow running tests and deploying the frontend.
+<img src="screenshots/ci_cd_workflow.png" width="100%" alt="CI/CD Pipeline" />
+
+### 4. Test Output (16 Passing Tests)
+Rust integration tests validating the smart contract logic across both contracts.
+<img src="screenshots/test_output.png" width="100%" alt="Test Output" />
+
+---
+
+## ✅ Submission Checklist
+
+- [x] **Two Soroban smart contracts** deployed on Stellar Testnet
+- [x] **Inter-contract communication** — `LibraryRegistry` calls `StewardReputation` atomically
+- [x] **Real XLM token flow** — deposits escrowed via Native SAC, refunded on return
+- [x] **Live dApp** on Vercel with real Freighter wallet connection
+- [x] **16 passing tests** across both contracts (cargo test --workspace)
+- [x] **CI/CD pipeline** — GitHub Actions runs build, lint, test on every push
+- [x] **On-chain events** — all actions emit typed `#[contractevent]` structs
+- [x] **Error handling** — all entry points return `Result<T, ContractError>`, no panics
+- [x] **Mobile responsive** UI
+- [x] **Sample transactions** on Stellar Expert (borrow + return)
+- [x] **Demo video** recorded and linked
 
 ---
 
