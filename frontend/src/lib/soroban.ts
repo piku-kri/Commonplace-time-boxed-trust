@@ -8,6 +8,7 @@ import {
   Address,
   xdr,
   Account,
+  Keypair,
 } from "@stellar/stellar-sdk";
 import {
   RPC_URL,
@@ -152,7 +153,7 @@ async function readContract(
   args: xdr.ScVal[]
 ): Promise<unknown> {
   const server = getServer();
-  const dummySource = "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF";
+  const dummySource = Keypair.random().publicKey();
   const account = await server
     .getAccount(dummySource)
     .catch(() => new Account(dummySource, "0"));
