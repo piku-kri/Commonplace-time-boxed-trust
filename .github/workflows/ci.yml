@@ -20,7 +20,7 @@ jobs:
       - name: Install Stellar CLI
         run: cargo binstall --no-confirm stellar-cli
       - name: Build Contracts
-        run: stellar contract build
+        run: cargo build --target wasm32-unknown-unknown --release
       - name: Run Contract Tests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
