@@ -1,0 +1,69 @@
+name: Deploy Contracts to Testnet
+
+on:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  deploy:
+    name: Deploy to Testnet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo registry and binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+            target
+          key: ${{ runner.os }}-cargo-deploy-${{ hashFiles('**/Cargo.lock') }}
+
+      # 1. Install cargo-binstall for instant installations
+      - name: Install cargo-binstall
+        run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+      # 2. Instantly install the latest stellar-cli (Takes 3 seconds instead of 11 minutes!)
+      - name: Install Stellar CLI
+        run: cargo binstall --no-confirm stellar-cli
+
+      # 3. Build using standard cargo to avoid 'wasm32v1-none' errors, then manually optimize
+      - name: Build contracts
+        run: |
+          cargo build --target wasm32-unknown-unknown --release
+          stellar contract optimize --wasm target/wasm32-unknown-unknown/release/library_registry.wasm
+          stellar contract optimize --wasm target/wasm32-unknown-unknown/release/steward_reputation.wasm
+
+      - name: Deploy to Testnet
+        run: |
+          echo "Generating identities..."
+          stellar keys generate deployer --network testnet
+          stellar keys fund deployer --network testnet
+
+          echo "Deploying Contracts..."
+          
+          CONTRACT_1_ID=$(stellar contract deploy \
+            --wasm target/wasm32-unknown-unknown/release/library_registry.optimized.wasm \
+            --source deployer \
+            --network testnet 2>deploy_err1.log) || { cat deploy_err1.log; exit 1; }
+          echo "Library Registry Contract deployed at: $CONTRACT_1_ID"
+          
+          CONTRACT_2_ID=$(stellar contract deploy \
+            --wasm target/wasm32-unknown-unknown/release/steward_reputation.optimized.wasm \
+            --source deployer \
+            --network testnet 2>deploy_err2.log) || { cat deploy_err2.log; exit 1; }
+          echo "Steward Reputation Contract deployed at: $CONTRACT_2_ID"
+          
+          # 5. Fetch Native Token ID (DO NOT deploy --asset native)
+          echo "Fetching Test Token (Native XLM asset) ID..."
+          TOKEN_ID=$(stellar contract id asset --asset native --network testnet)
+          echo "Native Token ID is: $TOKEN_ID"
