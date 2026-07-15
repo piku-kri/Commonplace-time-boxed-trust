@@ -314,7 +314,11 @@ function mapRawListing(raw: any): BookListing {
     lister: raw.lister,
     borrower: raw.borrower ?? null,
     deposit: String(raw.deposit),
-    status: mapEnum(raw.status) as ListingStatus,
+    status: (Array.isArray(raw.status)
+      ? raw.status[0]
+      : typeof raw.status === 'object' && raw.status !== null
+      ? Object.keys(raw.status)[0]
+      : String(raw.status)) as ListingStatus,
     listedAt: Number(raw.listed_at),
     borrowedAt: Number(raw.borrowed_at),
     gracePeriodSecs: Number(raw.grace_period_secs),
