@@ -7,6 +7,7 @@ import {
   scValToNative,
   Address,
   xdr,
+  Account,
 } from "@stellar/stellar-sdk";
 import {
   RPC_URL,
@@ -154,7 +155,7 @@ async function readContract(
   const dummySource = "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF";
   const account = await server
     .getAccount(dummySource)
-    .catch(async () => new (await import("@stellar/stellar-sdk")).Account(dummySource, "0"));
+    .catch(() => new Account(dummySource, "0"));
 
   const contract = new Contract(contractId);
   const tx = new TransactionBuilder(account, {

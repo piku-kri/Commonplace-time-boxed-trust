@@ -10,6 +10,7 @@ import { RegisterBoxModal } from "@/components/RegisterBoxModal";
 import { ReputationPanel } from "@/components/ReputationPanel";
 import { ToastStack, Toast } from "@/components/Toast";
 import { useWallet } from "@/hooks/useWallet";
+import { useBalance } from "@/hooks/useBalance";
 import { useListings } from "@/hooks/useListings";
 import { useBoxes } from "@/hooks/useBoxes";
 import { useActivityFeed } from "@/hooks/useActivityFeed";
@@ -19,6 +20,7 @@ import { registerBox, listBook, borrowBook, returnBook, expireLoan } from "@/lib
 
 export default function HomePage() {
   const wallet = useWallet();
+  const { balance, refreshBalance } = useBalance(wallet.address);
   const { listings, isLoading, error, refresh } = useListings();
   const { boxes, refresh: refreshBoxes } = useBoxes();
   const { events, pushEvent } = useActivityFeed();
@@ -66,6 +68,7 @@ export default function HomePage() {
         txHash,
       });
       refreshBoxes();
+      refreshBalance();
     } catch (err) {
       addToast({
         type: "error",
@@ -107,6 +110,7 @@ export default function HomePage() {
         txHash,
       });
       refresh();
+      refreshBalance();
     } catch (err) {
       addToast({
         type: "error",
@@ -131,6 +135,7 @@ export default function HomePage() {
         txHash,
       });
       refresh();
+      refreshBalance();
     } catch (err) {
       addToast({
         type: "error",
@@ -160,6 +165,7 @@ export default function HomePage() {
         txHash,
       });
       refresh();
+      refreshBalance();
     } catch (err) {
       addToast({
         type: "error",
@@ -189,6 +195,7 @@ export default function HomePage() {
         txHash,
       });
       refresh();
+      refreshBalance();
     } catch (err) {
       addToast({
         type: "error",
@@ -203,6 +210,7 @@ export default function HomePage() {
     <main className="min-h-screen">
       <Header
         address={wallet.address}
+        balance={balance}
         isConnecting={wallet.isConnecting}
         onConnect={wallet.connect}
         onDisconnect={wallet.disconnect}

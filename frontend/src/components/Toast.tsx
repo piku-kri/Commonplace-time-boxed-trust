@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { EXPLORER_TX_URL } from "@/lib/config";
 
 export interface Toast {
   id: string;
@@ -44,6 +45,16 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
       </span>
       <div className="min-w-0 flex-1">
         <p className={`text-sm ${isSuccess ? "text-page" : "text-cloth"}`}>{toast.message}</p>
+        {toast.txHash && (
+          <a
+            href={EXPLORER_TX_URL(toast.txHash)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 inline-block text-[11px] underline opacity-70 hover:opacity-100"
+          >
+            View on Explorer ↗
+          </a>
+        )}
       </div>
       <button
         onClick={() => onDismiss(toast.id)}
