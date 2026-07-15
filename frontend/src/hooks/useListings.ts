@@ -36,10 +36,7 @@ export function useListings() {
       const result = await listListings(0, 50);
       setState({ listings: result.reverse(), isLoading: false, error: null });
     } catch (err) {
-      const message =
-        err instanceof ContractCallError
-          ? err.message
-          : "Couldn't load the catalog. Retrying shortly.";
+      const message = err instanceof Error ? (err.message + (err.stack ? ' | ' + err.stack.slice(0, 50) : '')) : String(err);
       setState((s) => ({ ...s, isLoading: false, error: message }));
     }
   }, []);

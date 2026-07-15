@@ -25,8 +25,8 @@ export function ReputationPanel({ address }: { address: string }) {
       .then((s) => {
         if (!cancelled) setStats(s);
       })
-      .catch(() => {
-        if (!cancelled) setError("Couldn't load your standing right now.");
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? (err.message + (err.stack ? ' | ' + err.stack.slice(0, 50) : '')) : String(err));
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false);
